@@ -240,3 +240,5 @@ This design shows how a ransomware detector can work from first file event to fi
    (`features.LatestEntropyTracker`), and by computing entropy on the
    post-rename (final, post-encryption) file content rather than the
    pre-rename snapshot.
+#   r a n s o m _ d e t e c t o r  
+ 
