@@ -1,0 +1,873 @@
+{
+  "incident_id": "INC-1785269681-28492",
+  "generated_at": "2026-07-29 01:44:43",
+  "process_id": 28492,
+  "risk_score": 0.917,
+  "rule_score": 0.9,
+  "ml_score": 0.935,
+  "trigger_reasons": [
+    "entropy jump + mass file writes in window",
+    "suspicious extension pattern (e.g. .docx -> .locked)"
+  ],
+  "affected_paths": [
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx.locked",
+    "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx.locked"
+  ],
+  "recommended_action": "isolate/kill process and quarantine affected paths",
+  "event_timeline": [
+    {
+      "time": "01:44:40.258",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx"
+    },
+    {
+      "time": "01:44:40.258",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx"
+    },
+    {
+      "time": "01:44:40.258",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx"
+    },
+    {
+      "time": "01:44:40.258",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx"
+    },
+    {
+      "time": "01:44:40.258",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx"
+    },
+    {
+      "time": "01:44:40.258",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx"
+    },
+    {
+      "time": "01:44:40.259",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx"
+    },
+    {
+      "time": "01:44:40.260",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx"
+    },
+    {
+      "time": "01:44:40.261",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx"
+    },
+    {
+      "time": "01:44:40.262",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx"
+    },
+    {
+      "time": "01:44:40.262",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx"
+    },
+    {
+      "time": "01:44:40.262",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx"
+    },
+    {
+      "time": "01:44:40.262",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx"
+    },
+    {
+      "time": "01:44:40.262",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx"
+    },
+    {
+      "time": "01:44:40.263",
+      "event": "fs_create",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx"
+    },
+    {
+      "time": "01:44:40.264",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx"
+    },
+    {
+      "time": "01:44:40.564",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx"
+    },
+    {
+      "time": "01:44:40.565",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx"
+    },
+    {
+      "time": "01:44:40.565",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx.locked"
+    },
+    {
+      "time": "01:44:40.616",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx"
+    },
+    {
+      "time": "01:44:40.617",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx"
+    },
+    {
+      "time": "01:44:40.617",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx.locked"
+    },
+    {
+      "time": "01:44:40.668",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx"
+    },
+    {
+      "time": "01:44:40.668",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx"
+    },
+    {
+      "time": "01:44:40.668",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx.locked"
+    },
+    {
+      "time": "01:44:40.711",
+      "event": "proc_sample",
+      "path": null,
+      "details": {
+        "cpu_percent": 0.0,
+        "children": 1,
+        "io_bytes_per_s": 0.0
+      }
+    },
+    {
+      "time": "01:44:40.719",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx"
+    },
+    {
+      "time": "01:44:40.719",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx"
+    },
+    {
+      "time": "01:44:40.720",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx.locked"
+    },
+    {
+      "time": "01:44:40.772",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx"
+    },
+    {
+      "time": "01:44:40.772",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx"
+    },
+    {
+      "time": "01:44:40.772",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx.locked"
+    },
+    {
+      "time": "01:44:40.823",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx"
+    },
+    {
+      "time": "01:44:40.823",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx"
+    },
+    {
+      "time": "01:44:40.823",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx.locked"
+    },
+    {
+      "time": "01:44:40.875",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx"
+    },
+    {
+      "time": "01:44:40.875",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx"
+    },
+    {
+      "time": "01:44:40.876",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx.locked"
+    },
+    {
+      "time": "01:44:40.927",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx"
+    },
+    {
+      "time": "01:44:40.927",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx"
+    },
+    {
+      "time": "01:44:40.927",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx.locked"
+    },
+    {
+      "time": "01:44:40.980",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx"
+    },
+    {
+      "time": "01:44:40.980",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx"
+    },
+    {
+      "time": "01:44:40.980",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx.locked"
+    },
+    {
+      "time": "01:44:41.031",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx"
+    },
+    {
+      "time": "01:44:41.032",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx"
+    },
+    {
+      "time": "01:44:41.032",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx.locked"
+    },
+    {
+      "time": "01:44:41.083",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx"
+    },
+    {
+      "time": "01:44:41.084",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx"
+    },
+    {
+      "time": "01:44:41.084",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx.locked"
+    },
+    {
+      "time": "01:44:41.135",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx"
+    },
+    {
+      "time": "01:44:41.135",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx"
+    },
+    {
+      "time": "01:44:41.136",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx.locked"
+    },
+    {
+      "time": "01:44:41.187",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx"
+    },
+    {
+      "time": "01:44:41.188",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx"
+    },
+    {
+      "time": "01:44:41.188",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx.locked"
+    },
+    {
+      "time": "01:44:41.224",
+      "event": "proc_sample",
+      "path": null,
+      "details": {
+        "cpu_percent": 0.0,
+        "children": 1,
+        "io_bytes_per_s": 0.0
+      }
+    },
+    {
+      "time": "01:44:41.252",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx"
+    },
+    {
+      "time": "01:44:41.252",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx"
+    },
+    {
+      "time": "01:44:41.252",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx.locked"
+    },
+    {
+      "time": "01:44:41.303",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx"
+    },
+    {
+      "time": "01:44:41.304",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx"
+    },
+    {
+      "time": "01:44:41.304",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx.locked"
+    },
+    {
+      "time": "01:44:41.356",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx"
+    },
+    {
+      "time": "01:44:41.356",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx"
+    },
+    {
+      "time": "01:44:41.356",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx.locked"
+    },
+    {
+      "time": "01:44:41.407",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx"
+    },
+    {
+      "time": "01:44:41.407",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx"
+    },
+    {
+      "time": "01:44:41.407",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx.locked"
+    },
+    {
+      "time": "01:44:41.458",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx"
+    },
+    {
+      "time": "01:44:41.458",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx"
+    },
+    {
+      "time": "01:44:41.459",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx.locked"
+    },
+    {
+      "time": "01:44:41.509",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx"
+    },
+    {
+      "time": "01:44:41.509",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx"
+    },
+    {
+      "time": "01:44:41.510",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx.locked"
+    },
+    {
+      "time": "01:44:41.563",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx"
+    },
+    {
+      "time": "01:44:41.564",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx"
+    },
+    {
+      "time": "01:44:41.565",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx.locked"
+    },
+    {
+      "time": "01:44:41.615",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx"
+    },
+    {
+      "time": "01:44:41.616",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx"
+    },
+    {
+      "time": "01:44:41.617",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx.locked"
+    },
+    {
+      "time": "01:44:41.669",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx"
+    },
+    {
+      "time": "01:44:41.669",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx"
+    },
+    {
+      "time": "01:44:41.670",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx.locked"
+    },
+    {
+      "time": "01:44:41.721",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx"
+    },
+    {
+      "time": "01:44:41.721",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx"
+    },
+    {
+      "time": "01:44:41.722",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx.locked"
+    },
+    {
+      "time": "01:44:41.734",
+      "event": "proc_sample",
+      "path": null,
+      "details": {
+        "cpu_percent": 0.0,
+        "children": 1,
+        "io_bytes_per_s": 0.0
+      }
+    },
+    {
+      "time": "01:44:41.772",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx"
+    },
+    {
+      "time": "01:44:41.773",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx"
+    },
+    {
+      "time": "01:44:41.773",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx.locked"
+    },
+    {
+      "time": "01:44:41.824",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx"
+    },
+    {
+      "time": "01:44:41.825",
+      "event": "fs_modify",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx"
+    },
+    {
+      "time": "01:44:41.825",
+      "event": "fs_rename",
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx",
+      "renamed_to": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx.locked"
+    }
+  ],
+  "entropy_trend": [
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx",
+      "entropy": 3.718
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_0.docx.locked",
+      "entropy": 7.955
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_1.docx.locked",
+      "entropy": 7.951
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_2.docx.locked",
+      "entropy": 7.96
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_3.docx.locked",
+      "entropy": 7.96
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_4.docx.locked",
+      "entropy": 7.952
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_5.docx.locked",
+      "entropy": 7.954
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_6.docx.locked",
+      "entropy": 7.959
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_7.docx.locked",
+      "entropy": 7.956
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_8.docx.locked",
+      "entropy": 7.957
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_9.docx.locked",
+      "entropy": 7.957
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_10.docx.locked",
+      "entropy": 7.961
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_11.docx.locked",
+      "entropy": 7.96
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_12.docx.locked",
+      "entropy": 7.956
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_13.docx.locked",
+      "entropy": 7.943
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_14.docx.locked",
+      "entropy": 7.949
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_15.docx.locked",
+      "entropy": 7.957
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_16.docx.locked",
+      "entropy": 7.951
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_17.docx.locked",
+      "entropy": 7.958
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_18.docx.locked",
+      "entropy": 7.953
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_19.docx.locked",
+      "entropy": 7.947
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_20.docx.locked",
+      "entropy": 7.957
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_21.docx.locked",
+      "entropy": 7.953
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_22.docx.locked",
+      "entropy": 7.953
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_23.docx.locked",
+      "entropy": 7.952
+    },
+    {
+      "path": "D:\\IDS_1\\ransom_detector\\test_sandbox\\victim_doc_24.docx.locked",
+      "entropy": 7.957
+    }
+  ],
+  "summary": "Process 28492 touched 36 file(s); 25 file(s) reached high entropy (>=7.5 bits/byte) consistent with encrypted/packed output. Combined risk score 0.917 crossed the alert threshold, triggering process isolation."
+}

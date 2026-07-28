@@ -1,0 +1,6 @@
+watchdog
+psutil
+scikit-learn
+numpy
+fastapi
+uvicorn[standard]
