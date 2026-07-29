@@ -12,6 +12,27 @@ export interface StatusResponse {
   riskScore: number;
   threshold: number;
   alertCount: number;
+  analysis: {
+    currentStage: string;
+    activeStages: Array<{ name: string; status: "complete" | "active" | "pending"; detail: string }>;
+    evidence: Array<{
+      timestamp: number;
+      stage: string;
+      title: string;
+      detail: string;
+      severity: "low" | "medium" | "high" | "critical";
+      signals: string[];
+      features: Record<string, number>;
+    }>;
+    summary: {
+      riskScore: number;
+      ruleScore: number;
+      mlScore: number;
+      eventsProcessed: number;
+      suspiciousSignals: number;
+      forensicReady: boolean;
+    };
+  };
 }
 
 export interface AlertItem {

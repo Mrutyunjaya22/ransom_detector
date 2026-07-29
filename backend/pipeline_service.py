@@ -50,6 +50,8 @@ class PipelineService:
         self.threshold = 0.6
         self.alerts: list[dict[str, Any]] = []
         self.reports: list[dict[str, Any]] = self._load_reports()
+        self.last_observation: dict[str, Any] = {}
+        self.analysis_evidence: list[dict[str, Any]] = []
         self._lock = threading.Lock()
         self._collector: Collector | None = None
         self._engine: BehavioralEngine | None = None
@@ -98,6 +100,88 @@ class PipelineService:
         }
         return result
 
+    def _build_active_stages(self) -> list[dict[str, Any]]:
+        stage_names = STAGES
+        if self.mode == "idle":
+            return [
+                {"name": stage, "status": "pending", "detail": "Awaiting workload"}
+                for stage in stage_names
+            ]
+
+        current_idx = stage_names.index(self.stage) if self.stage in stage_names else len(stage_names) - 1
+        stages: list[dict[str, Any]] = []
+        for idx, stage_name in enumerate(stage_names):
+            if idx < current_idx:
+                status = "complete"
+                detail = self._stage_detail(stage_name)
+            elif idx == current_idx:
+                status = "active"
+                detail = self._stage_detail(stage_name)
+            else:
+                status = "pending"
+                detail = "Queued"
+            stages.append({"name": stage_name, "status": status, "detail": detail})
+        return stages
+
+    def _stage_detail(self, stage_name: str) -> str:
+        if stage_name == "collecting":
+            return f"{self.events_processed} events buffered for analysis"
+        if stage_name == "feature-extraction":
+            features = self.last_observation.get("features", {}) or {}
+            if features:
+                return (
+                    f"entropy {features.get('mean_entropy', 0):.1f} • "
+                    f"touched files {int(features.get('touched_file_count', 0))}"
+                )
+            return "Extracting entropy, rename and process behavior vectors"
+        if stage_name == "scoring":
+            if self.last_observation:
+                return (
+                    f"risk {self.last_observation.get('risk_score', 0):.2f} • "
+                    f"rule {self.last_observation.get('rule_score', 0):.2f}"
+                )
+            return "Scoring the feature window with rule and ML layers"
+        if stage_name == "correlating":
+            reasons = self.last_observation.get("reasons", []) or []
+            if reasons:
+                return f"{len(reasons)} suspicious signal(s) correlated"
+            return "Correlating suspicious file and process behavior"
+        if stage_name == "reporting":
+            if self._highest_alert or self.reports:
+                return "Forensic reconstruction report prepared"
+            return "Preparing incident reconstruction and evidence timeline"
+        return "Queued"
+
+    def _record_observation(self, result: dict[str, Any]) -> None:
+        self.last_observation = result
+        features = result.get("features", {}) or {}
+        reasons = result.get("reasons", []) or []
+        risk_score = float(result.get("risk_score", 0.0) or 0.0)
+        severity = "low"
+        if risk_score >= 0.8:
+            severity = "critical"
+        elif risk_score >= 0.6:
+            severity = "high"
+        elif risk_score >= 0.35:
+            severity = "medium"
+
+        self.analysis_evidence.insert(
+            0,
+            {
+                "timestamp": result.get("ts", time.time()),
+                "stage": self.stage,
+                "title": "Behavioral signal updated",
+                "detail": (
+                    f"risk {risk_score:.2f} | rule {result.get('rule_score', 0):.2f} | "
+                    f"ml {result.get('ml_score', 0):.2f}"
+                ),
+                "severity": severity,
+                "signals": reasons,
+                "features": features,
+            },
+        )
+        self.analysis_evidence = self.analysis_evidence[:8]
+
     def status_payload(self) -> dict[str, Any]:
         return {
             "pipeline": {
@@ -113,6 +197,19 @@ class PipelineService:
             "riskScore": round(self.score, 3),
             "threshold": self.threshold,
             "alertCount": len(self.alerts),
+            "analysis": {
+                "currentStage": self.stage,
+                "activeStages": self._build_active_stages(),
+                "evidence": self.analysis_evidence,
+                "summary": {
+                    "riskScore": round(self.score, 3),
+                    "ruleScore": round(self.last_observation.get("rule_score", 0.0), 3),
+                    "mlScore": round(self.last_observation.get("ml_score", 0.0), 3),
+                    "eventsProcessed": self.events_processed,
+                    "suspiciousSignals": len(self.last_observation.get("reasons", []) or []),
+                    "forensicReady": bool(self._highest_alert or self.reports),
+                },
+            },
         }
 
     def get_alerts(self) -> list[dict[str, Any]]:
@@ -196,6 +293,7 @@ class PipelineService:
             if pid:
                 result = self._engine.risk_score(pid)
                 self.score = result["risk_score"]
+                self._record_observation(result)
                 affected = list(self._engine.entropy_tracker._latest.get(pid, {}).keys())
                 alert = self._alert_manager.evaluate(result, affected)
                 if alert:

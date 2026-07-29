@@ -54,7 +54,35 @@ const STAGES = [
   "reporting",
 ];
 
-function severityClass(sev: AlertItem["severity"]) {
+const STAGE_INFO: Record<string, { label: string; description: string }> = {
+  "collecting": {
+    label: "Data collection",
+    description:
+      "The collector captures filesystem changes and process telemetry from the sandboxed workload.",
+  },
+  "feature-extraction": {
+    label: "Feature extraction",
+    description:
+      "Raw event data is converted into numeric signals such as entropy, file op rate, and extension-change frequency.",
+  },
+  "scoring": {
+    label: "Scoring",
+    description:
+      "A rules layer and a trained ML model both evaluate behavior, then their outputs are combined into a risk score.",
+  },
+  "correlating": {
+    label: "Correlation",
+    description:
+      "Suspicious file operations are correlated with process activity to identify malicious campaigns.",
+  },
+  "reporting": {
+    label: "Forensics",
+    description:
+      "An incident report is assembled with timeline evidence, alerts, and recommended analyst actions.",
+  },
+};
+
+function severityClass(sev: AlertItem["severity"] | "low" | "medium" | "high" | "critical") {
   return {
     low: "border-border text-muted-foreground",
     medium: "border-warn/50 text-warn",
@@ -128,6 +156,7 @@ function Dashboard() {
   const reportTriage = useMutation({ mutationFn: analyzeWithModel });
 
   const s = status.data;
+  const analysis = s?.analysis;
   const score = s?.riskScore ?? 0;
   const pct = Math.round(score * 100);
   const over = s ? score >= s.threshold : false;
@@ -188,6 +217,68 @@ function Dashboard() {
           detail={mode}
         />
       </div>
+
+      <Panel title="How the pipeline works" className="mb-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              Live analytical flow
+            </p>
+            <p className="mt-3 text-sm leading-6 text-foreground">
+              The system simulates a monitored process, collects file and process telemetry, then detects ransomware-like behavior using both rule-based and ML scoring.
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              Why it detects ransomware
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-foreground">
+              <li>• High entropy on written files suggests encryption.</li>
+              <li>• Rapid extension renames indicate ransomware payloads.</li>
+              <li>• CPU/IO spikes are correlated with suspicious file activity.</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              What you’re seeing
+            </p>
+            <p className="mt-3 text-sm leading-6 text-foreground">
+              The active stages and evidence feed show how data moves from collection into model scoring and forensic reporting in real time.
+            </p>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel title="How it works" className="mb-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              Overview
+            </p>
+            <p className="mt-3 text-sm leading-6 text-foreground">
+              The prototype simulates a monitored process, collects filesystem and process telemetry, extracts ransomware signals, and evaluates behavior with both heuristics and a trained model.
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              Why it works
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-foreground">
+              <li>• High-entropy writes often indicate encryption activity.</li>
+              <li>• Rapid extension changes signal mass file tampering.</li>
+              <li>• Process CPU/IO spikes are correlated with suspicious file operations.</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-border bg-card/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              What you’re seeing
+            </p>
+            <p className="mt-3 text-sm leading-6 text-foreground">
+              The live evidence feed tracks model score updates and rule-based signals as they appear, so you can follow the detection flow in real time.
+            </p>
+          </div>
+        </div>
+      </Panel>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Panel title="Risk score" className="lg:col-span-2">
@@ -298,6 +389,112 @@ function Dashboard() {
               ))}
             </ul>
           )}
+        </Panel>
+
+        <Panel title="Multi-stage behavioral analysis" className="lg:col-span-3">
+          <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-3">
+              {analysis?.activeStages.map((stage) => (
+                <div
+                  key={stage.name}
+                  className={cn(
+                    "rounded-lg border p-3",
+                    stage.status === "active"
+                      ? "border-primary/50 bg-primary/10"
+                      : stage.status === "complete"
+                        ? "border-ok/40 bg-ok/10"
+                        : "border-border bg-card/50",
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                        {stage.name}
+                      </p>
+                      <p className="mt-1 text-sm text-foreground">{stage.detail}</p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "font-mono text-[10px] uppercase",
+                        stage.status === "active"
+                          ? "border-primary text-primary"
+                          : stage.status === "complete"
+                            ? "border-ok text-ok"
+                            : "border-border text-muted-foreground",
+                      )}
+                    >
+                      {stage.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-border bg-surface/70 p-4">
+              <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+                Live summary
+              </p>
+              <div className="mt-3 space-y-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Risk</span>
+                  <span className="font-mono tabular-nums">{analysis?.summary.riskScore.toFixed(3) ?? "0.000"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Rule</span>
+                  <span className="font-mono tabular-nums">{analysis?.summary.ruleScore.toFixed(3) ?? "0.000"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">ML</span>
+                  <span className="font-mono tabular-nums">{analysis?.summary.mlScore.toFixed(3) ?? "0.000"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Signals</span>
+                  <span className="font-mono tabular-nums">{analysis?.summary.suspiciousSignals ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Forensic ready</span>
+                  <span className={cn("font-mono", analysis?.summary.forensicReady ? "text-ok" : "text-muted-foreground") }>
+                    {analysis?.summary.forensicReady ? "yes" : "no"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+              evidence feed
+            </p>
+            {!analysis?.evidence.length ? (
+              <p className="rounded border border-border bg-card/40 p-3 text-sm text-muted-foreground">
+                Waiting for behavioral evidence to appear.
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {analysis.evidence.map((item) => (
+                  <li key={`${item.timestamp}-${item.stage}`} className={cn("rounded border p-3", severityClass(item.severity))}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-mono text-[11px] uppercase tracking-[0.2em]">
+                        {item.stage}
+                      </p>
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        {new Date(item.timestamp * 1000).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm">{item.detail}</p>
+                    {item.signals.length > 0 && (
+                      <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                        {item.signals.map((signal) => (
+                          <li key={signal}>• {signal}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </Panel>
 
         <Panel title="Scan a file with the model" className="lg:col-span-3">
