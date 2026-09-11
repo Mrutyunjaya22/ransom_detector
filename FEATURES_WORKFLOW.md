@@ -1,259 +1,159 @@
-# Ransomware Detection Prototype — Feature Workflow
-
-This document explains how all major features work together in the ransomware detection prototype, from the browser UI to the model and forensic reconstruction.
-
-## 1. Architecture overview
-
-The prototype is split into three main layers:
-
-- **Frontend** (`ransomweb/`): React UI built with TanStack Start, Vite, and TypeScript.
-- **Backend** (`backend/`): FastAPI service exposing pipeline and report endpoints.
-- **Core pipeline** (`core/`): Collector, feature extraction, behavioral engine, alerting, and forensic report generation.
-
-The model file used for inference is stored in `models/rf_classifier.pkl`.
-
-## 2. Feature map
-
-### 2.1 Live pipeline monitor
-
-The dashboard shows:
-
-- Pipeline health and active stage
-- Model load status
-- Collector status
-- Workload mode (`idle`, `benign`, `attack`)
-- Live risk score and threshold view
-- Active alerts list
-- Evidence feed of behavioral signals
-- Recent forensic reports
-
-This view is powered by the backend API response from `GET /api/status`, `GET /api/alerts`, and `GET /api/reports`.
-
-### 2.2 Multi-stage behavioral analysis
-
-The detection pipeline is surfaced as distinct stages:
-
-1. `collecting`
-   - The collector watches sandbox filesystem events and polls process telemetry.
-   - It buffers events for analysis.
-2. `feature-extraction`
-   - Raw events become numeric signals such as entropy, file operation rate, extension changes, CPU%, and IO.
-3. `scoring`
-   - A rule-based layer and the ML model both score the behavior.
-   - Their outputs are combined into a single risk score.
-4. `correlating`
-   - Suspicious signals are correlated across files and processes.
-   - This stage decides whether the behavior is coherent enough to raise an alert.
-5. `reporting`
-   - Forensic reconstruction produces an incident report with timeline data, alerts, and recommended actions.
-
-### 2.3 File scanner and model triage
-
-The UI includes a file scanner component that accepts file uploads.
-
-- The file is sent to the backend via `POST /api/scan`.
-- A scan result is returned containing verdict, score, reasons, and extracted features.
-- This enables quick model-based triage of suspicious files.
-
-> Note: The backend implements `/api/scan` with real-time Shannon entropy extraction, file header analysis, ransomware extension checking, and ML model evaluation.
-
-### 2.4 Forensic reporting
-
-After a run completes, the backend can write incident reports into `reports/`.
-
-A report contains:
-
-- Incident ID
-- Mode (`benign` or `attack`)
-- Verdict
-- Peak risk score
-- Alert count
-- Generated timestamp
-- Process ID
-- Timeline of suspicious events
-- Features and signals supporting the detection
-- Recommendations for response
-
-The UI can load detail pages for each report via `GET /api/reports/{report_id}`.
-
-## 3. Backend feature details
-
-### 3.1 FastAPI endpoints
-
-The backend exposes these endpoints:
-
-- `GET /api/status`
-  - returns pipeline state, model status, risk score, thresholds, and analysis summary.
-- `GET /api/alerts`
-  - returns the latest active alerts.
-- `GET /api/reports`
-  - returns the report index.
-- `GET /api/reports/{report_id}`
-  - returns a single forensic report.
-- `POST /api/run`
-  - starts a detection run in `benign` or `attack` mode.
-
-### 3.2 Pipeline orchestration
-
-`backend/pipeline_service.py` manages runtime state.
-
-- `PipelineService.start_run(mode)`:
-  - loads the ML model from `models/rf_classifier.pkl`
-  - creates `BehavioralEngine`
-  - starts `Collector`
-  - launches `simulate_activity.py` to generate sandbox events
-  - starts a background loop to ingest and score events
-
-- `_run_loop()`:
-  - reads events from the collector queue
-  - ingests them into the engine
-  - updates live risk score
-  - evaluates alerts
-  - generates a forensic report after the workload finishes
-
-### 3.3 Live analysis payload
-
-The backend enriches the status response with:
-
-- `analysis.currentStage`
-- `analysis.activeStages`
-- `analysis.evidence`
-- `analysis.summary`
-
-This supports the dashboard’s multi-stage explanation and evidence feed.
-
-## 4. Core pipeline features
-
-### 4.1 Collector
-
-The collector combines two telemetry sources:
-
-- Filesystem watcher (`watchdog`)
-  - tracks create, modify, rename, delete events
-- Process monitor (`psutil`)
-  - samples CPU, IO, and child process count
-
-Each event becomes a typed `Event` object with a timestamp, kind, PID, path, and extra metadata.
-
-### 4.2 Feature extraction
-
-`core/features.py` converts raw events into numeric signals:
-
-- `shannon_entropy()` calculates file entropy
-- `safe_read_entropy()` reads file bytes and returns entropy or `None`
-- `ExtensionTracker` tracks extension changes and suspicious rename rates
-- `LatestEntropyTracker` keeps the most recent entropy sample for each touched file
-
-### 4.3 Behavioral engine
-
-`core/engine.py` manages the sliding window and scoring:
-
-- `SlidingWindow` holds recent events per PID
-- `RuleEngine` scores obvious ransomware signals
-- `MLScorer` loads `rf_classifier.pkl` and returns a probability score
-- `BehavioralEngine.risk_score(pid)` returns:
-  - rule score
-  - ML score
-  - combined risk score
-  - reasons and features
-
-### 4.4 Alerting
-
-`core/alert.py` evaluates the risk result and raises alerts when thresholds are exceeded.
-
-Alerts include:
-
-- timestamp
-- PID
-- risk, rule, ML scores
-- affected file paths
-- suspicious reasons
-- recommended action
-
-### 4.5 Forensics
-
-`core/forensics.py` builds incident reports from buffered events.
-
-Reports capture:
-
-- event timelines
-- entropy trends
-- suspicious behaviors
-- alert trigger reasons
-
-## 5. Frontend feature details
-
-### 5.1 API wrapper
-
-`ransomweb/src/lib/api.ts` provides typed functions for the UI:
-
-- `fetchStatus()`
-- `fetchAlerts()`
-- `fetchReports()`
-- `fetchReport(id)`
-- `startRun(mode)`
-- `fetchScans()`
-- `analyzeWithModel(input)`
-- `scanFile(file)`
-
-### 5.2 Request proxy layer
-
-The frontend proxies requests through Nitro route handlers in `ransomweb/src/routes/api/`.
-
-This means browser calls to `/api/...` are forwarded to the backend host under the hood, while preserving a simple local API shape for the UI.
-
-### 5.3 Dashboard behavior
-
-The main dashboard page:
-
-- polls `/api/status`, `/api/alerts`, and `/api/reports`
-- renders live risk score, stages, and alerts
-- shows a multi-stage evidence feed
-- lets users start benign or attack simulation runs
-- displays recent forensic reports and a report detail dialog
-
-### 5.4 Explanation panel
-
-A dedicated “How it works” panel describes:
-
-- what each stage does
-- why the score changes
-- how behavior is correlated and reported
-
-## 6. How the model is used
-
-- The ML model file is `models/rf_classifier.pkl`.
-- It is loaded only by the backend in `core/engine.py` via `MLScorer`.
-- The browser never directly loads or uses the model.
-- During runtime, the model evaluates the latest extracted features and contributes an `ml_score` to the combined risk.
-
-## 7. End-to-end flow summary
-
-### Starting a run
-
-1. UI button clicks `startRun("benign")` or `startRun("attack")`.
-2. Frontend sends `POST /api/run`.
-3. Backend loads the model and starts the collector.
-4. `simulate_activity.py` produces sandbox events.
-5. The collector ingests events and the engine computes risk.
-6. Alerts are raised if the combined score crosses threshold.
-7. A forensic report is generated after the workload finishes.
-
-### Monitoring live behavior
-
-1. UI polls `GET /api/status` repeatedly.
-2. Status responses include live risk, stage, event count, and analysis evidence.
-3. The dashboard updates the stage progression and evidence feed.
-
-### Reviewing a report
-
-1. User clicks a report entry.
-2. UI requests `GET /api/reports/{report_id}`.
-3. Detailed report data is displayed, including timeline, features, alerts, and recommendations.
-
-## 8. Notes and next steps
-
-- The prototype is designed for demo and investigation, not production use.
-- In production, the collector should use OS-native telemetry (ETW, eBPF, auditd) instead of filesystem polling.
-- The model should be retrained on real endpoint telemetry for deployable accuracy.
-- Adding `POST /api/scan` and `POST /api/analyze` on the backend would complete the file-scanning/triage integration.
+# Enterprise EDR Platform — Feature Workflow & Incident Lifecycle
+
+This document details the complete end-to-end operational workflow of the **AI-Powered Behavioral Ransomware Detection & SOC Triage Platform (EDR)**, explaining how endpoint sensors, binary streaming protocols, behavioral detection engines, active defense killswitches, relational persistence, and the SOC web dashboard interact.
+
+---
+
+## 1. End-to-End Architectural Workflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Endpoint as Remote Endpoint Sensor (agent/edr_agent.py)
+    participant Canaries as Canary Traps & IoC Auditor (core/)
+    participant Server as EDR Server & gRPC Ingestion (backend/grpc_server.py)
+    participant Engine as Dual Behavioral Engine (core/engine.py)
+    participant Mitigator as Active Containment (backend/mitigation.py)
+    participant DB as Async Relational DB (backend/repository.py)
+    participant WS as WebSocket Broadcaster (backend/websocket_manager.py)
+    participant SOC as SOC Dashboard (React 19 / TanStack Start)
+    participant MLOps as MLOps Retraining Loop (mlops/retrain_pipeline.py)
+
+    Endpoint->>Server: RegisterAgent (AgentInfo over gRPC)
+    Server->>DB: Persist Agent Registration
+    Endpoint->>Server: Bidirectional Stream: TelemetryBatch (File events + Process metrics)
+    Server->>Engine: Ingest batch events (sliding window)
+    Engine->>Engine: Evaluate risk score (Heuristic rules + Random Forest)
+    
+    alt Pre-Encryption IoC or Canary Tripwire
+        Canaries->>Mitigator: Tamper detected on Canary or vssadmin sabotage!
+        Mitigator->>Endpoint: Immediate process tree freeze (suspend) & terminate
+    else Behavioral Risk Score >= 0.80
+        Engine->>Server: Critical Risk threshold crossed
+        Server->>Endpoint: Stream MitigationDirective (TERMINATE)
+        Server->>Mitigator: Local emergency containment trigger
+        Mitigator->>Mitigator: Suspend thread execution & SIGKILL tree
+    end
+
+    Server->>DB: Save Alert & Forensic Incident Report
+    Server->>WS: Broadcast alert & mitigation event
+    WS->>SOC: Push real-time alert, gauge update, & mitigation telemetry
+    SOC->>MLOps: Analyst reviews incident & submits Feedback (TP/FP)
+    MLOps->>Engine: Retrain model & hot-reload weights in-memory
+```
+
+---
+
+## 2. Core Feature Workflows
+
+### 2.1 Decoupled Telemetry Ingestion (gRPC Streaming)
+1. **Agent Registration**:
+   - Remote sensors (`agent/edr_agent.py`) start on endpoints and connect to `backend/grpc_server.py` on port `50051`.
+   - The agent invokes `RegisterAgent` passing hostname, IP address, OS platform, and agent version.
+   - The server registers the agent in `edr_storage.db` via `EDRRepository.register_agent` and issues an active session token.
+2. **Streaming Telemetry Ingestion**:
+   - The agent continuously monitors filesystem mutations via `watchdog` and samples active process CPU/IO/threads via `psutil`.
+   - Telemetry is batched into `TelemetryBatch` Protocol Buffer envelopes and streamed over HTTP/2.
+   - The server feeds batches directly into `BehavioralEngine`'s sliding window without file system lag.
+
+---
+
+### 2.2 Dual-Layer Behavioral Detection Engine
+The behavioral engine evaluates running processes across a sliding temporal window (default: $10$ seconds) across **9 behavioral dimensions**:
+
+1. `file_op_rate`: Frequency of file writes/modifications per second.
+2. `mean_entropy`: Average Shannon entropy of touched files (0.0 to 8.0 bits/byte).
+3. `high_entropy_fraction`: Percentage of touched files with entropy $\ge 7.50$.
+4. `ext_change_rate`: Rename velocity per second.
+5. `suspicious_ext_rate`: Frequency of renames to known ransomware extensions (`.locked`, `.crypto`, etc.).
+6. `cpu_percent`: Process CPU utilization.
+7. `children_spawned`: Subprocess fan-out count.
+8. `io_bytes_per_s`: Storage throughput.
+9. `touched_file_count`: Distinct files mutated in the window.
+
+#### Scoring Engine:
+- **Heuristic Rule Layer (`RuleEngine`)**: Fast, explainable spike detector checking for simultaneous entropy jumps ($\ge 7.5$), mass write operations ($\ge 3$/sec), and suspicious extension alterations.
+- **Machine Learning Layer (`MLScorer`)**: Consumes the 9-dimensional vector using a `RandomForestClassifier` trained to differentiate normal office workloads (compilers, text editors) from automated encryption loops.
+- **Ensemble Combined Score**:
+  $$\text{Risk Score} = w_{\text{rule}} \times \text{RuleScore} + w_{\text{ml}} \times \text{MLScore}$$
+
+---
+
+### 2.3 Active Threat Mitigation & Containment
+When an evaluated risk score crosses the critical threshold ($\ge 0.80$) or proactive tripwires trigger:
+1. **Thread Quantum Freezing**:
+   - `ProcessMitigator.terminate_process_tree()` discovers all children recursively.
+   - Calls `process.suspend()` across every thread in the tree.
+   - **Benefit**: Encryption stops in $0$ms remaining execution time before filesystem write handles complete.
+2. **Graduated Termination**:
+   - Sends `SIGTERM` to allow clean handle release.
+   - Evaluates process exit status; if processes do not exit within $1.5$ seconds, escalates to `SIGKILL`.
+3. **Audit & WebSocket Broadcast**:
+   - Full mitigation telemetry (terminated PIDs, execution time in milliseconds, trigger reason) is pushed over the `mitigation` WebSocket channel and persisted in the database.
+
+---
+
+### 2.4 Proactive Traps & Sensor Hardening
+
+#### 1. Canary Bait File Traps (`core/canary.py`)
+- Automatically seeds decoy files prefixed alphabetically (`!00_passwords_vault.xlsx`, `!00_confidential_financials.docx`) in monitored directories.
+- Records initial SHA-256 hashes.
+- Because ransomware enumerates directories alphabetically to maximize victim impact, it targets the canary files first.
+- The instant a canary's content, hash, or filename changes, the tripwire fires an emergency termination command against the tampering process before legitimate user documents are touched.
+
+#### 2. Pre-Encryption IoC Auditing (`core/ioc_auditor.py`)
+- Audits active process command-line arguments against precursor sabotage techniques mapped to **MITRE ATT&CK**:
+  - `T1490` (Inhibit System Recovery): `vssadmin delete shadows`, `wmic shadowcopy delete`, `wbadmin delete catalog`, `bcdedit /set recoveryenabled No`.
+  - `T1070.001` (Indicator Removal: Clear Event Logs): `wevtutil cl Security`.
+  - `T1489` (Service Stop): `net stop vss`, `net stop sql`.
+- Neutralizes the adversary before file encryption can begin.
+
+---
+
+### 2.5 Bounded-Memory Streaming File Triage Scanner (`backend/scan_router.py`)
+- Accepts artifact uploads via `POST /api/scan`.
+- Streams file payloads in **1MB chunks** up to a strict 50MB ceiling (`HTTP 413`).
+- **$O(1)$ Constant-Memory Shannon Entropy**:
+  - Employs an online 256-bin frequency histogram.
+  - Updates frequency counts incrementally per byte chunk without storing the full file in RAM.
+  - Formula:
+    $$H = -\sum_{i=0}^{255} p_i \log_2(p_i)$$
+- Magic byte detection classifies file signatures (`MZ`, `ELF`, `PK`, `PDF`, `7z`, `GZIP`).
+- Evaluates the artifact with heuristics and the Random Forest model to assign an immediate verdict (`clean`, `suspicious`, `malicious`).
+
+---
+
+### 2.6 State Persistence & Relational Schema
+All platform events are persisted asynchronously via SQLAlchemy 2.0 in `edr_storage.db` (or PostgreSQL):
+- `agents`: Endpoint inventory, IP addresses, OS platforms, online/offline status, and heartbeat timestamps.
+- `alerts`: Security alerts with severity, risk scores, rule/ML breakdown, and affected paths.
+- `incident_reports`: Forensic reports detailing incident mode, duration, feature vectors, event timelines, and recommendations.
+- `scans`: Artifact triage scan history.
+- `analyst_feedback`: Human analyst triage validations.
+- `telemetry_events`: Raw filesystem and process telemetry stream archival.
+
+---
+
+### 2.7 Continuous MLOps Retraining Loop (`mlops/retrain_pipeline.py`)
+1. **Analyst Ground Truth Submission**:
+   - SOC analysts submit True Positive or False Positive labels via `POST /api/ml/feedback`.
+2. **Continuous Retraining Pipeline**:
+   - `POST /api/ml/retrain` triggers the retraining engine.
+   - Synthesizes baseline distributions augmented with weighted analyst feedback records.
+   - Trains a new `RandomForestClassifier` with cross-validation.
+   - Evaluates accuracy, precision, recall, and F1 score.
+   - Saves versioned model artifacts (`rf_classifier_v2.<timestamp>.pkl`).
+   - Updates `models/model_metadata.json`.
+   - **Zero-Downtime Hot Reload**: Dynamically updates the in-memory model weights of the active behavioral engine and file scanner without restarting the server.
+
+---
+
+### 2.8 Real-Time SOC Dashboard (`ransomweb/`)
+The React 19 / TanStack Start web interface provides sub-second visibility into all platform tiers:
+- **Status Pill & Health Bar**: Displays pipeline state, uptime, and active collector/model status.
+- **5-Stage Pipeline Progress Tracker**: Real-time visualization of detection stages (`collecting` $\rightarrow$ `feature-extraction` $\rightarrow$ `scoring` $\rightarrow$ `correlating` $\rightarrow$ `reporting`).
+- **Interactive Risk Score Gauge**: Visual dial displaying instantaneous behavioral risk.
+- **Live Evidence Feed**: Granular behavioral anomaly log with severity tags.
+- **Incident Reports Table & Modal**: Chronological timeline playback, feature inspection, and **JSON Export** for SOC reporting.
+- **Integrated File Scanner**: Drag-and-drop artifact scanner with automated AI-assisted threat triage (MITRE ATT&CK mappings, likely malware family, and containment guidance).
+- **Workload Detonation Controls**: Single-click trigger for `Run Benign` or `Run Attack` simulation workflows.
