@@ -220,7 +220,7 @@ class PipelineService:
     def status_payload(self) -> dict[str, Any]:
         return {
             "pipeline": {
-                "healthy": self.model_loaded and self.collector_active,
+                "healthy": self.model_loaded,
                 "stage": self.stage,
                 "mode": self.mode,
                 "uptimeSec": int(time.time() - self.started_at),

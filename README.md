@@ -8,6 +8,11 @@
 [![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy%202.0-D71F00.svg)](https://www.sqlalchemy.org/)
 [![Tests](https://img.shields.io/badge/Tests-37%20Passed-brightgreen.svg)]()
 
+> ### 🚀 Presentation-Ready Demo Mode
+> - **One-Click Presentation Launcher**: Double click **[`start_demo.bat`](file:///d:/ransom_web/ransom_detector/start_demo.bat)** (or execute `.\start_demo.ps1`) to automatically boot both the FastAPI Backend (Port 8000) and the React Web Console (Port 8081).
+> - **Panel Presentation Guide & Q&A Script**: Read **[`PANEL_PRESENTATION_GUIDE.md`](file:///d:/ransom_web/ransom_detector/PANEL_PRESENTATION_GUIDE.md)** for a 5-minute walkthrough script, live demonstration steps, and high-scoring technical answers to panel questions.
+> - **Web UI Access**: **`http://localhost:8081/`**
+
 An enterprise-grade, distributed **Endpoint Detection & Response (EDR)** and **Security Operations Center (SOC) Triage Platform**. The platform monitors real-time process execution, filesystem mutations, and information-theoretic metrics (Shannon entropy) to detect and contain ransomware campaigns in sub-second latency before permanent data loss occurs.
 
 ---

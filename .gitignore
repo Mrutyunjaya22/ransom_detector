@@ -16,8 +16,10 @@ ENV/
 *.sqlite3
 edr_storage.db
 
-# Live run reports
+# Live run reports and sandbox artifacts
 reports/INC-*
+test_sandbox/
+models/rf_classifier_v2.*.pkl
 
 # Frontend build outputs and dependencies
 ransomweb/node_modules/
