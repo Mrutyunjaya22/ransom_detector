@@ -128,21 +128,20 @@ class BehavioralEngine:
         self.window.add(pid, event.ts, event)
         self.forensic_log[pid].append(event)
 
+        extra = getattr(event, "extra", {}) or {}
+
         if event.kind in ("fs_create", "fs_modify"):
-            entropy = safe_read_entropy(event.path)
+            entropy = extra.get("entropy") if "entropy" in extra else safe_read_entropy(event.path)
             self.entropy_tracker.update(pid, event.path, entropy)
         elif event.kind == "fs_rename":
             self.ext_tracker.record_rename(pid, event.path, event.dest_path)
-            # Compute entropy on the renamed (final, post-encryption) file --
-            # that is the actual content an analyst / classifier cares about,
-            # not the pre-rename snapshot which may already be stale.
-            entropy = safe_read_entropy(event.dest_path)
+            entropy = extra.get("entropy") if "entropy" in extra else safe_read_entropy(event.dest_path)
             if entropy is not None:
                 self.entropy_tracker.update(pid, event.dest_path, entropy)
-        elif event.kind == "proc_sample":
-            self.last_cpu[pid] = event.extra.get("cpu_percent") or self.last_cpu[pid]
-            self.last_children[pid] = event.extra.get("children") or self.last_children[pid]
-            self.last_io[pid] = event.extra.get("io_bytes_per_s") or self.last_io[pid]
+        elif event.kind in ("proc_sample", "proc_snapshot"):
+            self.last_cpu[pid] = extra.get("cpu_percent") or self.last_cpu[pid]
+            self.last_children[pid] = extra.get("children") or extra.get("num_children") or self.last_children[pid]
+            self.last_io[pid] = extra.get("io_bytes_per_s") or self.last_io[pid]
 
     def compute_features(self, pid: int) -> dict:
         window_events = self.window.get(pid)

@@ -1,0 +1,22 @@
+{
+  "version": "v2.1789146387",
+  "artifact_file": "rf_classifier_v2.1789146387.pkl",
+  "trained_at": "2026-09-11 22:36:27",
+  "train_samples": 809,
+  "feedback_samples_included": 9,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "feature_importance": {
+    "file_op_rate": 0.2133,
+    "mean_entropy": 0.1534,
+    "high_entropy_fraction": 0.1869,
+    "ext_change_rate": 0.1334,
+    "suspicious_ext_rate": 0.1333,
+    "cpu_percent": 0.0,
+    "children_spawned": 0.0,
+    "io_bytes_per_s": 0.0197,
+    "touched_file_count": 0.16
+  }
+}

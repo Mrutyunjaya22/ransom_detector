@@ -371,17 +371,17 @@ function Dashboard() {
               {alerts.data.alerts.map((a) => (
                 <li
                   key={a.id}
-                  className={cn("rounded-md border p-3", severityClass(a.severity))}
+                  className={cn("rounded-md border p-3", severityClass(a.severity ?? "medium"))}
                 >
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="uppercase tracking-wider">{a.severity}</span>
-                    <span className="tabular-nums">{a.score.toFixed(3)}</span>
+                    <span className="uppercase tracking-wider">{a.severity ?? "ALERT"}</span>
+                    <span className="tabular-nums">{(a.score ?? 0).toFixed(3)}</span>
                   </div>
                   <p className="mt-1 font-mono text-sm text-foreground">
-                    {a.process} · {a.pid}
+                    {a.process ?? "monitored_process"} · {a.pid}
                   </p>
                   <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
-                    {a.reasons.map((r) => (
+                    {(a.reasons ?? []).map((r) => (
                       <li key={r}>— {r}</li>
                     ))}
                   </ul>
@@ -579,15 +579,15 @@ function Dashboard() {
               <div className="grid grid-cols-3 gap-3 font-mono">
                 <div>
                   <p className="text-xs uppercase text-muted-foreground">Verdict</p>
-                  <p>{detail.data.report.verdict}</p>
+                  <p>{detail.data.report.verdict ?? "unknown"}</p>
                 </div>
                 <div>
                   <p className="text-xs uppercase text-muted-foreground">Peak score</p>
-                  <p className="tabular-nums">{detail.data.report.peakScore.toFixed(3)}</p>
+                  <p className="tabular-nums">{(detail.data.report.peakScore ?? 0).toFixed(3)}</p>
                 </div>
                 <div>
                   <p className="text-xs uppercase text-muted-foreground">Duration</p>
-                  <p className="tabular-nums">{detail.data.report.durationSec}s</p>
+                  <p className="tabular-nums">{detail.data.report.durationSec ?? 30}s</p>
                 </div>
               </div>
 
@@ -596,7 +596,7 @@ function Dashboard() {
                   Features
                 </p>
                 <ul className="grid grid-cols-2 gap-2 font-mono text-xs">
-                  {Object.entries(detail.data.report.features).map(([k, v]) => (
+                  {Object.entries(detail.data.report.features ?? {}).map(([k, v]) => (
                     <li
                       key={k}
                       className="flex justify-between rounded border border-border px-2 py-1"
@@ -613,31 +613,31 @@ function Dashboard() {
                   Timeline
                 </p>
                 <ul className="space-y-1 font-mono text-xs">
-                  {detail.data.report.timeline.map((e) => (
+                  {(detail.data.report.timeline ?? []).map((e) => (
                     <li key={e.t} className="flex items-center gap-3">
                       <span className="w-10 tabular-nums text-muted-foreground">
                         +{e.t}s
                       </span>
-                      <span className="w-14 tabular-nums">{e.score.toFixed(2)}</span>
+                      <span className="w-14 tabular-nums">{(e.score ?? 0).toFixed(2)}</span>
                       <span>{e.event}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {detail.data.report.alerts.length > 0 && (
+              {(detail.data.report.alerts ?? []).length > 0 && (
                 <div>
                   <p className="mb-2 font-mono text-xs uppercase tracking-wider text-muted-foreground">
                     Alerts
                   </p>
                   <ul className="space-y-2">
-                    {detail.data.report.alerts.map((a) => (
+                    {(detail.data.report.alerts ?? []).map((a) => (
                       <li
                         key={a.id}
-                        className={cn("rounded border p-2 text-xs", severityClass(a.severity))}
+                        className={cn("rounded border p-2 text-xs", severityClass(a.severity ?? "medium"))}
                       >
-                        <span className="font-mono uppercase">{a.severity}</span> —{" "}
-                        {a.reasons.join("; ")}
+                        <span className="font-mono uppercase">{a.severity ?? "ALERT"}</span> —{" "}
+                        {(a.reasons ?? []).join("; ")}
                       </li>
                     ))}
                   </ul>
@@ -653,23 +653,42 @@ function Dashboard() {
               </p>
 
               <div>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={reportTriage.isPending}
-                  onClick={() =>
-                    reportTriage.mutate({
-                      kind: "report",
-                      subject: `${detail.data!.report.process} (${detail.data!.report.mode} workload)`,
-                      score: detail.data!.report.peakScore,
-                      verdict: detail.data!.report.verdict,
-                      reasons: detail.data!.report.alerts.flatMap((a) => a.reasons),
-                      features: detail.data!.report.features,
-                    })
-                  }
-                >
-                  {reportTriage.isPending ? "Model reasoning…" : "Run AI triage on report"}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={reportTriage.isPending}
+                    onClick={() =>
+                      reportTriage.mutate({
+                        kind: "report",
+                        subject: `${detail.data!.report.process} (${detail.data!.report.mode} workload)`,
+                        score: detail.data!.report.peakScore ?? 0,
+                        verdict: detail.data!.report.verdict ?? "unknown",
+                        reasons: (detail.data!.report.alerts ?? []).flatMap((a) => a.reasons ?? []),
+                        features: detail.data!.report.features ?? {},
+                      })
+                    }
+                  >
+                    {reportTriage.isPending ? "Model reasoning…" : "Run AI triage on report"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const blob = new Blob([JSON.stringify(detail.data!.report, null, 2)], {
+                        type: "application/json",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `incident-${detail.data!.report.id || "report"}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    Export JSON
+                  </Button>
+                </div>
 
                 {reportTriage.isError && (
                   <p className="mt-2 rounded border border-danger/50 bg-danger/10 p-2 text-xs text-danger">

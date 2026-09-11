@@ -55,7 +55,7 @@ The UI includes a file scanner component that accepts file uploads.
 - A scan result is returned containing verdict, score, reasons, and extracted features.
 - This enables quick model-based triage of suspicious files.
 
-> Note: The backend implementation of `/api/scan` may need to be added if it is not present in `backend/app.py`.
+> Note: The backend implements `/api/scan` with real-time Shannon entropy extraction, file header analysis, ransomware extension checking, and ML model evaluation.
 
 ### 2.4 Forensic reporting
 

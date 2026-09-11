@@ -133,3 +133,30 @@ export async function scanFile(file: File) {
   const json = (await res.json()) as { scan: ScanResultItem };
   return json.scan;
 }
+
+export interface ModelMetadata {
+  version: string;
+  artifact_file?: string;
+  trained_at: string;
+  train_samples: number;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  feature_importance: Record<string, number>;
+}
+
+export const fetchModelMetadata = () => get<{ model: ModelMetadata }>("/api/ml/model/latest");
+
+export const submitAnalystFeedback = (feedback: {
+  target_type: "alert" | "incident" | "scan";
+  target_id: string;
+  label: "true_positive" | "false_positive";
+  analyst_name?: string;
+  notes?: string;
+}) => post<{ status: string; feedback_id: string }>("/api/ml/feedback", feedback);
+
+export const triggerRetraining = (nSamples?: number) =>
+  post<{ status: string; message: string; metadata: ModelMetadata }>("/api/ml/retrain", {
+    n_synthetic_samples: nSamples || 1500,
+  });
