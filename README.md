@@ -30,6 +30,23 @@ Our platform shifts from static signature detection to **real-time behavioral an
 
 ---
 
+## 🗺️ Documentation Roadmap & Information Flow
+
+To navigate our technical specifications, architectural evolution, feature sequence diagrams, and kernel telemetry blueprints, use the master reading paths:
+
+| Document | Target Audience & Reading Focus |
+| :--- | :--- |
+| 🧭 **[Documentation Roadmap & Flow](file:///d:/ransom_web/ransom_detector/DOCUMENTATION_FLOW.md)** | **Master Flowchart** mapping all 9 documentation files with role-based tracks. |
+| 🧠 **[System Architecture Guide](file:///d:/ransom_web/ransom_detector/SYSTEM_ARCHITECTURE_GUIDE.md)** | Biological immune system mental model, 7 tiers, 8-step lifecycle, math engine. |
+| 🔄 **[System Evolution Changes](file:///d:/ransom_web/ransom_detector/SYSTEM_EVOLUTION_CHANGES.md)** | Comparative Before-vs-After transformation matrix (initial MVP vs enterprise EDR). |
+| ⚡ **[Feature Workflows & Incidents](file:///d:/ransom_web/ransom_detector/FEATURES_WORKFLOW.md)** | Sequence diagram, canary traps, IoC command auditor, active mitigation. |
+| 🛠️ **[Detailed Setup & API Guide](file:///d:/ransom_web/ransom_detector/DETAILED_SETUP_AND_ARCHITECTURE.md)** | Practical runbook, terminal execution commands, and REST/WS/gRPC API contracts. |
+| 🛡️ **[Kernel Telemetry Architecture](file:///d:/ransom_web/ransom_detector/docs/KERNEL_TELEMETRY_ARCHITECTURE.md)** | Windows Minifilter driver (`fltmgr.sys`) and Linux eBPF specs for zero-loss blocking. |
+| 📝 **[Session Changelog](file:///d:/ransom_web/ransom_detector/CHANGES_MADE_NOW.md)** | Granular file-by-file log of all components created in this engineering session. |
+| 💻 **[Frontend Dashboard Guide](file:///d:/ransom_web/ransom_detector/ransomweb/README.md)** | React 19 / TanStack Start SOC cockpit, real-time dials, and triage modal. |
+
+---
+
 ## 2. High-Level System Architecture
 
 ```mermaid
